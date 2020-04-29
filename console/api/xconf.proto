@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package api;
+
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_package = "com.onego.xconf.api";
+option go_package = ".;api";
+
+service Xconf {
+  rpc CreateNamespace(CreateNamespaceRequest) returns (google.protobuf.Empty) {};
+  rpc ListNamespaces(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+
+  rpc CreateGroup(CreateGroupRequest) returns (google.protobuf.Empty) {};
+  rpc ListGroups(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+
+  rpc CreateConfig(CreateConfigRequest) returns (Config) {};
+  rpc UpdateConfig(UpdateConfigRequest) returns (Config) {};
+  rpc GetConfig(GetConfigRequest) returns (Config) {};
+  rpc DeleteConfig(DeleteConfigRequest) returns (google.protobuf.Empty) {};
+  rpc ListConfigs(ListConfigsRequest) returns (ListConfigsResponse) {};
+}
+
+message CreateNamespaceRequest {
+  string namespace = 1;
+}
+
+message ListNamespacesResponse {
+  repeated string namespaces = 1;
+}
+
+message CreateGroupRequest {
+  string name = 1;
+}
+
+message ListGroupsRequest {
+  string namespace = 1;
+}
+message ListGroupsResponse {
+  repeated string names = 1;
+}
+
+message GetConfigRequest {
+  // namespace/group/name
+  string name = 1;
+}
+
+message CreateConfigRequest {
+  // namespace/group
+  string parent = 1;
+  Config config = 2;
+}
+
+message UpdateConfigRequest {
+  // namespace/group
+  string parent = 1;
+  Config config = 2;
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteConfigRequest {
+  // namespace/group/name
+  string name = 1;
+}
+
+message ListConfigsRequest {
+  // namespace/group
+  string parent = 1;
+}
+
+message ListConfigsResponse {
+  repeated Config configs = 1;
+}
+
+message ConfigMeta {
+  string version = 1;
+  string comment = 2;
+  string canary = 3;
+  google.protobuf.Timestamp ctime = 4;
+  google.protobuf.Timestamp mtime = 5;
+}
+
+message Config {
+  string name = 1;
+  string content = 2;
+  ConfigMeta meta = 3;
+}
+
