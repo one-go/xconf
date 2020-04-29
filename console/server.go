@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	pfxConf  = "/xconf/xconf/"
+	pfx      = "/xconf/"
+	pfxConf  = pfx + "xconf/"
 	pfxSpace = pfxConf + "spaces/"
 	pfxGroup = pfxConf + "group/"
 )
@@ -32,12 +33,12 @@ func newConsoleServer(logger *zap.Logger, client *clientv3.Client) *Console {
 	return console
 }
 
-func (c *Console) CreateNamespace(ctx context.Context, in *pb.CreateNamespaceRequest) (*empty.Empty, error) {
-	_, err := c.cli.Put(ctx, pfxSpace+in.Namespace, "")
+func (c *Console) CreateNamespace(ctx context.Context, in *pb.CreateNamespaceRequest) (*pb.Namespace, error) {
+	_, err := c.cli.Put(ctx, pfxSpace+in.GetSpace().Name, "")
 	if err != nil {
 		return nil, err
 	}
-	return &empty.Empty{}, nil
+	return in.Space, nil
 }
 
 func (c *Console) ListNamespaces(ctx context.Context, in *empty.Empty) (*pb.ListNamespacesResponse, error) {
@@ -48,17 +49,17 @@ func (c *Console) ListNamespaces(ctx context.Context, in *empty.Empty) (*pb.List
 
 	resp := new(pb.ListNamespacesResponse)
 	for _, kv := range res.Kvs {
-		resp.Namespaces = append(resp.Namespaces, string(kv.Key))
+		resp.Spaces = append(resp.Spaces, &pb.Namespace{Name: string(kv.Key)})
 	}
 	return resp, nil
 }
 
-func (c *Console) CreateGroup(ctx context.Context, in *pb.CreateGroupRequest) (*empty.Empty, error) {
-	_, err := c.cli.Put(ctx, pfxGroup+in.Name, "")
+func (c *Console) CreateGroup(ctx context.Context, in *pb.CreateGroupRequest) (*pb.Group, error) {
+	_, err := c.cli.Put(ctx, pfxGroup+in.Namespace+"/"+in.GetGroup().Name, "")
 	if err != nil {
 		return nil, err
 	}
-	return &empty.Empty{}, nil
+	return in.Group, nil
 }
 
 func (c *Console) ListGroups(ctx context.Context, in *pb.ListGroupsRequest) (*pb.ListGroupsResponse, error) {
@@ -69,24 +70,30 @@ func (c *Console) ListGroups(ctx context.Context, in *pb.ListGroupsRequest) (*pb
 
 	resp := new(pb.ListGroupsResponse)
 	for _, kv := range res.Kvs {
-		resp.Names = append(resp.Names, string(kv.Key))
+		resp.Groups = append(resp.Groups, &pb.Group{Name: string(kv.Key)})
 	}
 	return resp, nil
 }
 
-func (c *Console) CreateConfig(ctx context.Context, in *pb.Config) (*pb.Config, error) {
-	if _, err := Get(ctx, c.cli, c.MetaName(in.Name)); err != nil {
+func (c *Console) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) (*pb.Config, error) {
+	name := pfx + in.Parent + "/" + in.Config.Id
+	res, err := c.cli.Get(ctx, name+".metadata")
+	if err != nil {
 		return nil, err
 	}
-	in.Meta.Ctime = ptypes.TimestampNow()
-	if err := c.putConfig(ctx, in); err != nil {
+	if res.Count > 0 {
+		return nil, status.Error(codes.AlreadyExists, "config already exists")
+	}
+	in.Config.Meta.Ctime = ptypes.TimestampNow()
+	if err := c.putConfig(ctx, name, in.Config); err != nil {
 		return nil, err
 	}
-	return in, nil
+	return in.Config, nil
 }
 
 func (c *Console) UpdateConfig(ctx context.Context, in *pb.UpdateConfigRequest) (*pb.Config, error) {
-	config, err := c.getConfig(ctx, in.GetConfig().Name)
+	name := pfx + in.Parent + "/" + in.GetConfig().Id
+	config, err := c.getConfig(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -101,27 +108,27 @@ func (c *Console) UpdateConfig(ctx context.Context, in *pb.UpdateConfigRequest) 
 		}
 	}
 	config.Meta.Mtime = ptypes.TimestampNow()
-	if err = c.putConfig(ctx, config); err != nil {
+	if err = c.putConfig(ctx, name, config); err != nil {
 		return nil, err
 	}
 	return config, nil
 }
 
 func (c *Console) GetConfig(ctx context.Context, in *pb.GetConfigRequest) (*pb.Config, error) {
-	return c.getConfig(ctx, in.GetName())
+	name := pfx + in.GetName()
+	return c.getConfig(ctx, name)
 }
 
 func (c *Console) getConfig(ctx context.Context, name string) (*pb.Config, error) {
-	content, err := Get(ctx, c.cli, c.Name(name))
+	content, err := Get(ctx, c.cli, name)
 	if err != nil {
 		return nil, err
 	}
 	meta := new(pb.ConfigMeta)
-	if err = GetObject(ctx, c.cli, c.MetaName(name), meta); err != nil {
+	if err = GetObject(ctx, c.cli, name+".metadata", meta); err != nil {
 		return nil, err
 	}
 	config := &pb.Config{
-		Name:    name,
 		Meta:    meta,
 		Content: string(content),
 	}
@@ -129,7 +136,8 @@ func (c *Console) getConfig(ctx context.Context, name string) (*pb.Config, error
 }
 
 func (c *Console) DeleteConfig(ctx context.Context, in *pb.DeleteConfigRequest) (*empty.Empty, error) {
-	if _, err := c.cli.Delete(ctx, c.MetaName(in.Name)); err != nil {
+	name := pfx + in.GetName()
+	if _, err := c.cli.Delete(ctx, name+".metadata"); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, nil
@@ -139,20 +147,12 @@ func (c *Console) ListConfigs(ctx context.Context, in *pb.ListConfigsRequest) (*
 	return nil, nil
 }
 
-func (c *Console) Name(name string) string {
-	return "/xconf/" + name
-}
-
-func (c *Console) MetaName(name string) string {
-	return c.Name(name) + ".metadata"
-}
-
-func (c *Console) putConfig(ctx context.Context, in *pb.Config) error {
-	meta, _ := json.Marshal(in.GetMeta)
-	if _, err := c.cli.Put(ctx, c.Name(in.Name), in.Content); err != nil {
+func (c *Console) putConfig(ctx context.Context, name string, in *pb.Config) error {
+	meta, _ := json.Marshal(in.GetMeta())
+	if _, err := c.cli.Put(ctx, name, in.Content); err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
-	if _, err := c.cli.Put(ctx, c.MetaName(in.Name), string(meta)); err != nil {
+	if _, err := c.cli.Put(ctx, name+".metadata", string(meta)); err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
 	return nil

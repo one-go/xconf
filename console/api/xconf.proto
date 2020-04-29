@@ -10,11 +10,11 @@ option java_package = "com.onego.xconf.api";
 option go_package = ".;api";
 
 service Xconf {
-  rpc CreateNamespace(CreateNamespaceRequest) returns (google.protobuf.Empty) {};
-  rpc ListNamespaces(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  rpc CreateNamespace(CreateNamespaceRequest) returns (Namespace) {};
+  rpc ListNamespaces(google.protobuf.Empty) returns (ListNamespacesResponse) {};
 
-  rpc CreateGroup(CreateGroupRequest) returns (google.protobuf.Empty) {};
-  rpc ListGroups(google.protobuf.Empty) returns (google.protobuf.Empty) {};
+  rpc CreateGroup(CreateGroupRequest) returns (Group) {};
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {};
 
   rpc CreateConfig(CreateConfigRequest) returns (Config) {};
   rpc UpdateConfig(UpdateConfigRequest) returns (Config) {};
@@ -24,26 +24,27 @@ service Xconf {
 }
 
 message CreateNamespaceRequest {
-  string namespace = 1;
+  Namespace space = 1;
 }
 
 message ListNamespacesResponse {
-  repeated string namespaces = 1;
+  repeated Namespace spaces = 1;
 }
 
 message CreateGroupRequest {
-  string name = 1;
+  string namespace = 1;
+  Group group = 2;
 }
 
 message ListGroupsRequest {
   string namespace = 1;
 }
 message ListGroupsResponse {
-  repeated string names = 1;
+  repeated Group groups = 1;
 }
 
 message GetConfigRequest {
-  // namespace/group/name
+  // namespace/group/id
   string name = 1;
 }
 
@@ -61,7 +62,7 @@ message UpdateConfigRequest {
 }
 
 message DeleteConfigRequest {
-  // namespace/group/name
+  // namespace/group/id
   string name = 1;
 }
 
@@ -83,8 +84,15 @@ message ConfigMeta {
 }
 
 message Config {
-  string name = 1;
+  string id = 1;
   string content = 2;
   ConfigMeta meta = 3;
 }
 
+message Group {
+  string name = 1;
+}
+
+message Namespace {
+  string name = 1;
+}

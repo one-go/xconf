@@ -12,6 +12,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type Config struct {
@@ -29,11 +30,11 @@ type Config struct {
 var config Config
 
 func main() {
-	flag.Parse()
 	host := flag.String("host", "127.0.0.1:2378", "listen address")
 	endpoints := flag.String("endpoints", "127.0.0.1:2379", "etcd endpoints")
 	username := flag.String("user", "", "etcd username")
 	passwd := flag.String("passwd", "", "etcd password")
+	flag.Parse()
 
 	lis, err := net.Listen("tcp", *host)
 	if err != nil {
@@ -52,6 +53,8 @@ func main() {
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterXconfServer(grpcServer, newConsoleServer(logger, cli))
+	reflection.Register(grpcServer)
+	s := newConsoleServer(logger, cli)
+	pb.RegisterXconfServer(grpcServer, s)
 	grpcServer.Serve(lis)
 }

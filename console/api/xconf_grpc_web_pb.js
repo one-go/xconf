@@ -22,8 +22,13 @@ goog.require('proto.api.CreateGroupRequest');
 goog.require('proto.api.CreateNamespaceRequest');
 goog.require('proto.api.DeleteConfigRequest');
 goog.require('proto.api.GetConfigRequest');
+goog.require('proto.api.Group');
 goog.require('proto.api.ListConfigsRequest');
 goog.require('proto.api.ListConfigsResponse');
+goog.require('proto.api.ListGroupsRequest');
+goog.require('proto.api.ListGroupsResponse');
+goog.require('proto.api.ListNamespacesResponse');
+goog.require('proto.api.Namespace');
 goog.require('proto.api.UpdateConfigRequest');
 goog.require('proto.google.protobuf.Empty');
 
@@ -87,13 +92,13 @@ proto.api.XconfPromiseClient =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.api.CreateNamespaceRequest,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.Namespace>}
  */
 const methodDescriptor_Xconf_CreateNamespace = new grpc.web.MethodDescriptor(
   '/api.Xconf/CreateNamespace',
   grpc.web.MethodType.UNARY,
   proto.api.CreateNamespaceRequest,
-  proto.google.protobuf.Empty,
+  proto.api.Namespace,
   /**
    * @param {!proto.api.CreateNamespaceRequest} request
    * @return {!Uint8Array}
@@ -101,7 +106,7 @@ const methodDescriptor_Xconf_CreateNamespace = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.Namespace.deserializeBinary
 );
 
 
@@ -109,10 +114,10 @@ const methodDescriptor_Xconf_CreateNamespace = new grpc.web.MethodDescriptor(
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.api.CreateNamespaceRequest,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.Namespace>}
  */
 const methodInfo_Xconf_CreateNamespace = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.google.protobuf.Empty,
+  proto.api.Namespace,
   /**
    * @param {!proto.api.CreateNamespaceRequest} request
    * @return {!Uint8Array}
@@ -120,7 +125,7 @@ const methodInfo_Xconf_CreateNamespace = new grpc.web.AbstractClientBase.MethodI
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.Namespace.deserializeBinary
 );
 
 
@@ -129,9 +134,9 @@ const methodInfo_Xconf_CreateNamespace = new grpc.web.AbstractClientBase.MethodI
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.Error, ?proto.api.Namespace)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.api.Namespace>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.api.XconfClient.prototype.createNamespace =
@@ -150,7 +155,7 @@ proto.api.XconfClient.prototype.createNamespace =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.api.Namespace>}
  *     A native promise that resolves to the response
  */
 proto.api.XconfPromiseClient.prototype.createNamespace =
@@ -167,13 +172,13 @@ proto.api.XconfPromiseClient.prototype.createNamespace =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.google.protobuf.Empty,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.ListNamespacesResponse>}
  */
 const methodDescriptor_Xconf_ListNamespaces = new grpc.web.MethodDescriptor(
   '/api.Xconf/ListNamespaces',
   grpc.web.MethodType.UNARY,
   proto.google.protobuf.Empty,
-  proto.google.protobuf.Empty,
+  proto.api.ListNamespacesResponse,
   /**
    * @param {!proto.google.protobuf.Empty} request
    * @return {!Uint8Array}
@@ -181,7 +186,7 @@ const methodDescriptor_Xconf_ListNamespaces = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.ListNamespacesResponse.deserializeBinary
 );
 
 
@@ -189,10 +194,10 @@ const methodDescriptor_Xconf_ListNamespaces = new grpc.web.MethodDescriptor(
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.google.protobuf.Empty,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.ListNamespacesResponse>}
  */
 const methodInfo_Xconf_ListNamespaces = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.google.protobuf.Empty,
+  proto.api.ListNamespacesResponse,
   /**
    * @param {!proto.google.protobuf.Empty} request
    * @return {!Uint8Array}
@@ -200,7 +205,7 @@ const methodInfo_Xconf_ListNamespaces = new grpc.web.AbstractClientBase.MethodIn
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.ListNamespacesResponse.deserializeBinary
 );
 
 
@@ -209,9 +214,9 @@ const methodInfo_Xconf_ListNamespaces = new grpc.web.AbstractClientBase.MethodIn
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.Error, ?proto.api.ListNamespacesResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.api.ListNamespacesResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.api.XconfClient.prototype.listNamespaces =
@@ -230,7 +235,7 @@ proto.api.XconfClient.prototype.listNamespaces =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.api.ListNamespacesResponse>}
  *     A native promise that resolves to the response
  */
 proto.api.XconfPromiseClient.prototype.listNamespaces =
@@ -247,13 +252,13 @@ proto.api.XconfPromiseClient.prototype.listNamespaces =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.api.CreateGroupRequest,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.Group>}
  */
 const methodDescriptor_Xconf_CreateGroup = new grpc.web.MethodDescriptor(
   '/api.Xconf/CreateGroup',
   grpc.web.MethodType.UNARY,
   proto.api.CreateGroupRequest,
-  proto.google.protobuf.Empty,
+  proto.api.Group,
   /**
    * @param {!proto.api.CreateGroupRequest} request
    * @return {!Uint8Array}
@@ -261,7 +266,7 @@ const methodDescriptor_Xconf_CreateGroup = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.Group.deserializeBinary
 );
 
 
@@ -269,10 +274,10 @@ const methodDescriptor_Xconf_CreateGroup = new grpc.web.MethodDescriptor(
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.api.CreateGroupRequest,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.Group>}
  */
 const methodInfo_Xconf_CreateGroup = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.google.protobuf.Empty,
+  proto.api.Group,
   /**
    * @param {!proto.api.CreateGroupRequest} request
    * @return {!Uint8Array}
@@ -280,7 +285,7 @@ const methodInfo_Xconf_CreateGroup = new grpc.web.AbstractClientBase.MethodInfo(
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.Group.deserializeBinary
 );
 
 
@@ -289,9 +294,9 @@ const methodInfo_Xconf_CreateGroup = new grpc.web.AbstractClientBase.MethodInfo(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.Error, ?proto.api.Group)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.api.Group>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.api.XconfClient.prototype.createGroup =
@@ -310,7 +315,7 @@ proto.api.XconfClient.prototype.createGroup =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.api.Group>}
  *     A native promise that resolves to the response
  */
 proto.api.XconfPromiseClient.prototype.createGroup =
@@ -326,52 +331,52 @@ proto.api.XconfPromiseClient.prototype.createGroup =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.google.protobuf.Empty,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.ListGroupsRequest,
+ *   !proto.api.ListGroupsResponse>}
  */
 const methodDescriptor_Xconf_ListGroups = new grpc.web.MethodDescriptor(
   '/api.Xconf/ListGroups',
   grpc.web.MethodType.UNARY,
-  proto.google.protobuf.Empty,
-  proto.google.protobuf.Empty,
+  proto.api.ListGroupsRequest,
+  proto.api.ListGroupsResponse,
   /**
-   * @param {!proto.google.protobuf.Empty} request
+   * @param {!proto.api.ListGroupsRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.ListGroupsResponse.deserializeBinary
 );
 
 
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.google.protobuf.Empty,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.api.ListGroupsRequest,
+ *   !proto.api.ListGroupsResponse>}
  */
 const methodInfo_Xconf_ListGroups = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.google.protobuf.Empty,
+  proto.api.ListGroupsResponse,
   /**
-   * @param {!proto.google.protobuf.Empty} request
+   * @param {!proto.api.ListGroupsRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  proto.api.ListGroupsResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The
+ * @param {!proto.api.ListGroupsRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.Error, ?proto.api.ListGroupsResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.api.ListGroupsResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.api.XconfClient.prototype.listGroups =
@@ -386,11 +391,11 @@ proto.api.XconfClient.prototype.listGroups =
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The
+ * @param {!proto.api.ListGroupsRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.api.ListGroupsResponse>}
  *     A native promise that resolves to the response
  */
 proto.api.XconfPromiseClient.prototype.listGroups =
