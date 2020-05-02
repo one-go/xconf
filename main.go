@@ -6,9 +6,10 @@ import (
 	"flag"
 	"log"
 	"net"
+	"os"
 	"strings"
 
-	pb "github.com/one-go/xconf/console/api"
+	pb "github.com/one-go/xconf/api"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -30,10 +31,10 @@ type Config struct {
 var config Config
 
 func main() {
-	host := flag.String("host", "127.0.0.1:2378", "listen address")
-	endpoints := flag.String("endpoints", "127.0.0.1:2379", "etcd endpoints")
-	username := flag.String("user", "", "etcd username")
-	passwd := flag.String("passwd", "", "etcd password")
+	host := flag.String("listener", "127.0.0.1:8900", "listen address")
+	endpoints := flag.String("endpoints", os.Getenv("ETCD_ENDPOINTS"), "etcd endpoints")
+	username := flag.String("user", os.Getenv("ETCD_USER"), "etcd username")
+	passwd := flag.String("passwd", os.Getenv("ETCD_PASSWD"), "etcd password")
 	flag.Parse()
 
 	lis, err := net.Listen("tcp", *host)

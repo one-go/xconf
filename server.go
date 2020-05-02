@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	empty "github.com/golang/protobuf/ptypes/empty"
-	pb "github.com/one-go/xconf/console/api"
+	pb "github.com/one-go/xconf/api"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
