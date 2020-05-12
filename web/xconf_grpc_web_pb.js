@@ -7,34 +7,18 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 
-goog.provide('proto.api.XconfClient');
-goog.provide('proto.api.XconfPromiseClient');
 
-goog.require('grpc.web.GrpcWebClientBase');
-goog.require('grpc.web.AbstractClientBase');
-goog.require('grpc.web.ClientReadableStream');
-goog.require('grpc.web.Error');
-goog.require('grpc.web.MethodDescriptor');
-goog.require('grpc.web.MethodType');
-goog.require('proto.api.Config');
-goog.require('proto.api.CreateConfigRequest');
-goog.require('proto.api.CreateGroupRequest');
-goog.require('proto.api.CreateNamespaceRequest');
-goog.require('proto.api.DeleteConfigRequest');
-goog.require('proto.api.GetConfigRequest');
-goog.require('proto.api.Group');
-goog.require('proto.api.ListConfigsRequest');
-goog.require('proto.api.ListConfigsResponse');
-goog.require('proto.api.ListGroupsRequest');
-goog.require('proto.api.ListGroupsResponse');
-goog.require('proto.api.ListNamespacesResponse');
-goog.require('proto.api.Namespace');
-goog.require('proto.api.UpdateConfigRequest');
-goog.require('proto.google.protobuf.Empty');
+const grpc = {};
+grpc.web = require('grpc-web');
 
 
+var google_protobuf_field_mask_pb = require('google-protobuf/google/protobuf/field_mask_pb.js')
 
-goog.scope(function() {
+var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js')
+
+var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
+const proto = {};
+proto.api = require('./xconf_pb.js');
 
 /**
  * @param {string} hostname
@@ -177,7 +161,7 @@ proto.api.XconfPromiseClient.prototype.createNamespace =
 const methodDescriptor_Xconf_ListNamespaces = new grpc.web.MethodDescriptor(
   '/api.Xconf/ListNamespaces',
   grpc.web.MethodType.UNARY,
-  proto.google.protobuf.Empty,
+  google_protobuf_empty_pb.Empty,
   proto.api.ListNamespacesResponse,
   /**
    * @param {!proto.google.protobuf.Empty} request
@@ -658,7 +642,7 @@ const methodDescriptor_Xconf_DeleteConfig = new grpc.web.MethodDescriptor(
   '/api.Xconf/DeleteConfig',
   grpc.web.MethodType.UNARY,
   proto.api.DeleteConfigRequest,
-  proto.google.protobuf.Empty,
+  google_protobuf_empty_pb.Empty,
   /**
    * @param {!proto.api.DeleteConfigRequest} request
    * @return {!Uint8Array}
@@ -666,7 +650,7 @@ const methodDescriptor_Xconf_DeleteConfig = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  google_protobuf_empty_pb.Empty.deserializeBinary
 );
 
 
@@ -677,7 +661,7 @@ const methodDescriptor_Xconf_DeleteConfig = new grpc.web.MethodDescriptor(
  *   !proto.google.protobuf.Empty>}
  */
 const methodInfo_Xconf_DeleteConfig = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.google.protobuf.Empty,
+  google_protobuf_empty_pb.Empty,
   /**
    * @param {!proto.api.DeleteConfigRequest} request
    * @return {!Uint8Array}
@@ -685,7 +669,7 @@ const methodInfo_Xconf_DeleteConfig = new grpc.web.AbstractClientBase.MethodInfo
   function(request) {
     return request.serializeBinary();
   },
-  proto.google.protobuf.Empty.deserializeBinary
+  google_protobuf_empty_pb.Empty.deserializeBinary
 );
 
 
@@ -808,5 +792,5 @@ proto.api.XconfPromiseClient.prototype.listConfigs =
 };
 
 
-}); // goog.scope
+module.exports = proto.api;
 

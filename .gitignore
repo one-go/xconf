@@ -13,3 +13,5 @@
 
 bin/
 etcd_data/
+web/dist/
+web/node_modules/

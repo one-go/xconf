@@ -14,7 +14,7 @@ LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 build:
 	go build ${LDFLAGS} -o bin/xconf
 proto:
-	go generate github.com/one-go/xconf/...
+	protoc -I api --go_out=plugins=grpc:api --js_out=import_style=commonjs:web --grpc-web_out=import_style=commonjs,mode=grpcwebtext:web api/xconf.proto
 
 .PHONY: docker-image
 docker-image:

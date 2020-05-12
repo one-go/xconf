@@ -1,4 +1,4 @@
-//go:generate protoc -I api --go_out=plugins=grpc:api --js_out=import_style=commonjs:api --grpc-web_out=mode=grpcwebtext:api api/xconf.proto
+//go:generate protoc -I api --go_out=plugins=grpc:api --js_out=import_style=commonjs:web --grpc-web_out=mode=grpcwebtext:web api/xconf.proto
 
 package main
 

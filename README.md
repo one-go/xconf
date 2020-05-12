@@ -46,10 +46,11 @@ metadata:
 备注等
 
 ## Quick Run
+docker network create xconf-net
 1. etcd
 ```
 docker run \
---name etcd-gcr-v3.4.7 -d \
+--name etcd-gcr-v3.4.7 -d --network xconf-net \
 -p 2379:2379 -p 2380:2380 \
 -v etcdata:/etcd-data \
 gcr.io/etcd-development/etcd:v3.4.7 \
@@ -71,10 +72,10 @@ gcr.io/etcd-development/etcd:v3.4.7 \
 2. xconf
 ```
 docker build -t onego/xconf:dev .
-docker run --name xconf -d -p 8900:8900 -e ETCD_ENDPOINTS=127.0.0.1:2379 onego/xconf:dev
+docker run --name xconf --network xconf-net --rm -d -p 8900:8900 -e ETCD_ENDPOINTS=127.0.0.1:2379 onego/xconf:dev
 ```
 
 3. envoyproxy
 ```
-docker run --name envoy --rm -d -p 8001:8001 -p 8080:8080 -v envoy.yml:/etc/envoy.yml envoyproxy/envoy:v1.14.1
+docker run --name envoy --network xconf-net --rm -d -p 8001:8001 -p 8080:8080 -v $(pwd)/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.14.1
 ```

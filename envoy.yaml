@@ -40,6 +40,7 @@ static_resources:
     connect_timeout: 0.25s
     type: logical_dns
     http2_protocol_options: {}
-    lb_policy: round_robin
-    # win/mac hosts: Use address: host.docker.internal instead of address: localhost in the line below
-    hosts: [{ socket_address: { address: localhost, port_value: 8900 }}]
+    upstream_connection_options:
+      tcp_keepalive:
+        keepalive_time: 300
+    hosts: [{ socket_address: { address: xconf, port_value: 8900 }}]
