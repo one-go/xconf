@@ -12,3 +12,4 @@
 *.out
 
 bin/
+etcd_data/

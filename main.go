@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	host := flag.String("l", "127.0.0.1:8900", "listen address")
+	host := flag.String("l", ":8900", "listen address")
 	endpoints := flag.String("h", os.Getenv("ETCD_ENDPOINTS"), "etcd endpoints")
 	username := flag.String("u", os.Getenv("ETCD_USER"), "etcd username")
 	passwd := flag.String("p", os.Getenv("ETCD_PASSWD"), "etcd password")

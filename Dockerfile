@@ -1,23 +1,13 @@
-ARG GO_VERSION=1.14
-FROM golang:${GO_VERSION}-alpine as build
+FROM golang:1.14 AS builder
 
-# Necessary to run 'go get' and to compile the linked binary
-RUN apk add git musl-dev
+ENV CGO_ENABLED=0
 
-ADD . /xconf
+WORKDIR /go/src/xconf
+COPY . .
 
-WORKDIR /xconf
+RUN go install -v -ldflags "-X main.Version=`git rev-parse HEAD` -X main.Build=`date +%FT%T%z`"
 
-ENV GO111MODULE=on
+FROM scratch
+COPY --from=builder /go/bin/xconf /usr/bin/xconf
 
-# build & install server
-RUN go get -u ./... && make build
-
-FROM scratch AS final
-LABEL maintainer="ifish <fishioon@gmail.com>"
-
-COPY --from=build /xconf/bin/xconf /go/bin/xconf
-
-ENTRYPOINT ["/go/bin/xconf", "--listener", ":8900"]
-
-EXPOSE 8900
+ENTRYPOINT ["/usr/bin/xconf"]
