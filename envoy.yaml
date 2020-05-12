@@ -43,4 +43,4 @@ static_resources:
     upstream_connection_options:
       tcp_keepalive:
         keepalive_time: 300
-    hosts: [{ socket_address: { address: xconf, port_value: 8900 }}]
+    hosts: [{ socket_address: { address: xconfserver, port_value: 8900 }}]

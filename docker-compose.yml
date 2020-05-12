@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+
+  envoy:
+    image: envoyproxy/envoy:v1.14.1
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - xnet
+    expose: 
+      - "8001"
+      - "8080"
+    ports: 
+      - "8001:8001"
+      - "8080:8080"
+
+  etcd:
+    image: gcr.io/etcd-development/etcd:v3.4.7
+    volumes:
+      - ./etcdata:/etcd-data
+    networks:
+      xnet:
+        aliases:
+          - etcd_cluster
+    expose: 
+      - "2379"
+      - "2380"
+    ports: 
+      - "2379:2379"
+      - "2380:2380"
+    command: /usr/local/bin/etcd --name s1 --data-dir /etcd-data --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://0.0.0.0:2379 --listen-peer-urls http://0.0.0.0:2380 --initial-advertise-peer-urls http://0.0.0.0:2380 --initial-cluster s1=http://0.0.0.0:2380 --initial-cluster-token tkn --initial-cluster-state new --log-level info --logger zap --log-outputs stderr
+
+  xconf:
+    image: onego/xconf:dev
+    networks:
+      xnet:
+        aliases:
+          - xconfserver
+    environment:
+      - ETCD_ENDPOINTS=etcd_cluster:2379
+    expose: 
+      - "8900"
+    ports: 
+      - "8900:8900"
+
+networks:
+  xnet: {}

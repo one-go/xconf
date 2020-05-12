@@ -12,6 +12,6 @@
 *.out
 
 bin/
-etcd_data/
+etcdata/
 web/dist/
 web/node_modules/
