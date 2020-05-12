@@ -4,7 +4,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net"
 	"os"
 	"strings"
@@ -16,30 +15,19 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type Config struct {
-	Interval      int    `toml:"interval"`
-	SecretKeyring string `toml:"secret_keyring"`
-	SRVDomain     string `toml:"srv_domain"`
-	SRVRecord     string `toml:"srv_record"`
-	LogLevel      string `toml:"log-level"`
-	Watch         bool   `toml:"watch"`
-	PrintVersion  bool
-	ConfigFile    string
-	OneTime       bool
-}
-
-var config Config
-
 func main() {
-	host := flag.String("listener", "127.0.0.1:8900", "listen address")
-	endpoints := flag.String("endpoints", os.Getenv("ETCD_ENDPOINTS"), "etcd endpoints")
-	username := flag.String("user", os.Getenv("ETCD_USER"), "etcd username")
-	passwd := flag.String("passwd", os.Getenv("ETCD_PASSWD"), "etcd password")
+	host := flag.String("l", "127.0.0.1:8900", "listen address")
+	endpoints := flag.String("h", os.Getenv("ETCD_ENDPOINTS"), "etcd endpoints")
+	username := flag.String("u", os.Getenv("ETCD_USER"), "etcd username")
+	passwd := flag.String("p", os.Getenv("ETCD_PASSWD"), "etcd password")
 	flag.Parse()
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
 
 	lis, err := net.Listen("tcp", *host)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Fatal("failed to listen", zap.String("host", *host))
 	}
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints: strings.Split(*endpoints, ","),
@@ -47,15 +35,14 @@ func main() {
 		Password:  *passwd,
 	})
 	if err != nil {
-		log.Fatalf("falied to connect etcd: %+v", err)
+		logger.Fatal("failed to connect etcd", zap.String("host", *host), zap.Error(err))
 	}
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	reflection.Register(grpcServer)
 	s := newConsoleServer(logger, cli)
 	pb.RegisterXconfServer(grpcServer, s)
+	logger.Info("listening on", zap.String("host", *host))
 	grpcServer.Serve(lis)
 }

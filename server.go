@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"github.com/golang/protobuf/ptypes"
 	empty "github.com/golang/protobuf/ptypes/empty"
@@ -14,8 +15,8 @@ import (
 )
 
 const (
-	pfx      = "/xconf/"
-	pfxConf  = pfx + "xconf/"
+	prefix   = "/xconf/"
+	pfxConf  = prefix + "xconf/"
 	pfxSpace = pfxConf + "spaces/"
 	pfxGroup = pfxConf + "group/"
 )
@@ -49,7 +50,8 @@ func (c *Console) ListNamespaces(ctx context.Context, in *empty.Empty) (*pb.List
 
 	resp := new(pb.ListNamespacesResponse)
 	for _, kv := range res.Kvs {
-		resp.Spaces = append(resp.Spaces, &pb.Namespace{Name: string(kv.Key)})
+		space := strings.TrimPrefix(string(kv.Key), pfxSpace)
+		resp.Spaces = append(resp.Spaces, &pb.Namespace{Name: space})
 	}
 	return resp, nil
 }
@@ -63,20 +65,25 @@ func (c *Console) CreateGroup(ctx context.Context, in *pb.CreateGroupRequest) (*
 }
 
 func (c *Console) ListGroups(ctx context.Context, in *pb.ListGroupsRequest) (*pb.ListGroupsResponse, error) {
-	res, err := c.cli.Get(ctx, pfxGroup+in.Namespace, clientv3.WithPrefix())
+	pfx := pfxGroup + in.Namespace + "/"
+	res, err := c.cli.Get(ctx, pfx, clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}
 
 	resp := new(pb.ListGroupsResponse)
 	for _, kv := range res.Kvs {
-		resp.Groups = append(resp.Groups, &pb.Group{Name: string(kv.Key)})
+		group := strings.TrimPrefix(string(kv.Key), pfx)
+		resp.Groups = append(resp.Groups, &pb.Group{Name: group})
 	}
 	return resp, nil
 }
 
 func (c *Console) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) (*pb.Config, error) {
-	name := pfx + in.Parent + "/" + in.Config.Id
+	if in.Parent == "" || in.Config == nil || in.Config.Id == "" {
+		return nil, status.Error(codes.InvalidArgument, codes.InvalidArgument.String())
+	}
+	name := prefix + in.Parent + "/" + in.Config.Id
 	res, err := c.cli.Get(ctx, name+".metadata")
 	if err != nil {
 		return nil, err
@@ -85,6 +92,9 @@ func (c *Console) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) 
 		return nil, status.Error(codes.AlreadyExists, "config already exists")
 	}
 	in.Config.Meta.Ctime = ptypes.TimestampNow()
+	if in.Config.Meta.Version == "" {
+		// in.Config.Meta.Version = strconv.FormatInt(in.Config.Meta.Ctime.GetSeconds(), 10)
+	}
 	if err := c.putConfig(ctx, name, in.Config); err != nil {
 		return nil, err
 	}
@@ -92,8 +102,8 @@ func (c *Console) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) 
 }
 
 func (c *Console) UpdateConfig(ctx context.Context, in *pb.UpdateConfigRequest) (*pb.Config, error) {
-	name := pfx + in.Parent + "/" + in.GetConfig().Id
-	config, err := c.getConfig(ctx, name)
+	name := prefix + in.Parent + "/" + in.Config.Id
+	config, err := c.getConfig(ctx, name, in.Config.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +111,8 @@ func (c *Console) UpdateConfig(ctx context.Context, in *pb.UpdateConfigRequest) 
 		switch path {
 		case "config.content":
 			config.Content = in.Config.Content
+		case "config.meta.version":
+			config.Meta.Version = in.Config.Meta.Version
 		case "config.meta.canary":
 			config.Meta.Canary = in.Config.Meta.Canary
 		case "config.meta.comment":
@@ -115,11 +127,39 @@ func (c *Console) UpdateConfig(ctx context.Context, in *pb.UpdateConfigRequest) 
 }
 
 func (c *Console) GetConfig(ctx context.Context, in *pb.GetConfigRequest) (*pb.Config, error) {
-	name := pfx + in.GetName()
-	return c.getConfig(ctx, name)
+	if in.Name == "" {
+		return nil, status.Error(codes.InvalidArgument, "config name empty")
+	}
+	name := prefix + in.GetName()
+	return c.getConfig(ctx, name, in.Name)
 }
 
-func (c *Console) getConfig(ctx context.Context, name string) (*pb.Config, error) {
+func (c *Console) DeleteConfig(ctx context.Context, in *pb.DeleteConfigRequest) (*empty.Empty, error) {
+	name := prefix + in.GetName()
+	if _, err := c.cli.Delete(ctx, name+".metadata"); err != nil {
+		return nil, err
+	}
+	return &empty.Empty{}, nil
+}
+
+func (c *Console) ListConfigs(ctx context.Context, in *pb.ListConfigsRequest) (*pb.ListConfigsResponse, error) {
+	pfx := prefix + in.Parent + "/"
+	res, err := c.cli.Get(ctx, pfx, clientv3.WithPrefix(), clientv3.WithKeysOnly())
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(pb.ListConfigsResponse)
+	for _, kv := range res.Kvs {
+		name := string(kv.Key)
+		if config, err := c.getConfig(ctx, name, strings.TrimPrefix(name, pfx)); err == nil {
+			resp.Configs = append(resp.Configs, config)
+		}
+	}
+	return resp, nil
+}
+
+func (c *Console) getConfig(ctx context.Context, name, id string) (*pb.Config, error) {
 	content, err := Get(ctx, c.cli, name)
 	if err != nil {
 		return nil, err
@@ -129,22 +169,11 @@ func (c *Console) getConfig(ctx context.Context, name string) (*pb.Config, error
 		return nil, err
 	}
 	config := &pb.Config{
+		Id:      id,
 		Meta:    meta,
 		Content: string(content),
 	}
 	return config, nil
-}
-
-func (c *Console) DeleteConfig(ctx context.Context, in *pb.DeleteConfigRequest) (*empty.Empty, error) {
-	name := pfx + in.GetName()
-	if _, err := c.cli.Delete(ctx, name+".metadata"); err != nil {
-		return nil, err
-	}
-	return &empty.Empty{}, nil
-}
-
-func (c *Console) ListConfigs(ctx context.Context, in *pb.ListConfigsRequest) (*pb.ListConfigsResponse, error) {
-	return nil, nil
 }
 
 func (c *Console) putConfig(ctx context.Context, name string, in *pb.Config) error {
