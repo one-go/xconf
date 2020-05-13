@@ -91,6 +91,9 @@ func (c *Console) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) 
 	if res.Count > 0 {
 		return nil, status.Error(codes.AlreadyExists, "config already exists")
 	}
+	if in.Config.Meta == nil {
+		in.Config.Meta = new(pb.ConfigMeta)
+	}
 	in.Config.Meta.Ctime = ptypes.TimestampNow()
 	if in.Config.Meta.Version == "" {
 		// in.Config.Meta.Version = strconv.FormatInt(in.Config.Meta.Ctime.GetSeconds(), 10)
