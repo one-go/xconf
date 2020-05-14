@@ -1,7 +1,7 @@
 const {ListConfigsRequest, CreateConfigRequest, Config} = require('./xconf_pb.js');
 const {XconfClient} = require('./xconf_grpc_web_pb.js');
 
-var client = new XconfClient('http://' + window.location.hostname + ':8080')
+var client = new XconfClient(window.location.host)
 
 var config = new Config();
 config.setId('dex.json');
