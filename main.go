@@ -5,6 +5,7 @@ package main
 import (
 	"flag"
 	"net"
+	"net/http"
 	"os"
 	"strings"
 
@@ -17,6 +18,8 @@ import (
 
 func main() {
 	host := flag.String("l", ":8900", "listen address")
+	staticHost := flag.String("s", "", "listen static files")
+	staticDir := flag.String("dir", "web", "static dir")
 	endpoints := flag.String("h", os.Getenv("ETCD_ENDPOINTS"), "etcd endpoints")
 	username := flag.String("u", os.Getenv("ETCD_USER"), "etcd username")
 	passwd := flag.String("p", os.Getenv("ETCD_PASSWD"), "etcd password")
@@ -24,6 +27,14 @@ func main() {
 
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
+
+	if *staticHost != "" {
+		go func() {
+			if err := http.ListenAndServe(*staticHost, http.FileServer(http.Dir(*staticDir))); err != nil {
+				logger.Fatal("file server failed", zap.String("host", *staticHost), zap.String("dir", *staticDir), zap.Error(err))
+			}
+		}()
+	}
 
 	lis, err := net.Listen("tcp", *host)
 	if err != nil {

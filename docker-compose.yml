@@ -32,16 +32,19 @@ services:
 
   xconf:
     image: onego/xconf:dev
+    volumes:
+      - ./web:/web
     networks:
       xnet:
         aliases:
           - xconfserver
-    environment:
-      - ETCD_ENDPOINTS=etcd_cluster:2379
     expose: 
       - "8900"
+      - "8901"
     ports: 
       - "8900:8900"
+      - "8901:8901"
+    command: -l :8900 -s :8901 -dir /web -h etcd_cluster:2379
 
 networks:
   xnet: {}
