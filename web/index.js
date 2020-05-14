@@ -1,8 +1,7 @@
 const {ListConfigsRequest, CreateConfigRequest, Config} = require('./xconf_pb.js');
 const {XconfClient} = require('./xconf_grpc_web_pb.js');
 
-var client = new XconfClient(window.location.host)
-
+var client = new XconfClient(window.location.protocol);
 var config = new Config();
 config.setId('dex.json');
 config.setContent('{"hello":"world"}');
