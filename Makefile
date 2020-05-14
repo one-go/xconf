@@ -1,4 +1,4 @@
-PROJ=xconf
+REPO_PATH=github.com/one-go/xconf
 BUILD=`date +%FT%T%z`
 
 VERSION=`git rev-parse --short HEAD`
@@ -12,7 +12,7 @@ DOCKER_IMAGE=$(DOCKER_REPO):$(VERSION)
 LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
 build:
-	go build ${LDFLAGS} -o bin/xconf
+	go build ${LDFLAGS} -o bin/xconf ${REPO_PATH}/console
 proto:
 	protoc -I api --go_out=plugins=grpc:api --js_out=import_style=commonjs:web --grpc-web_out=import_style=commonjs,mode=grpcwebtext:web api/xconf.proto
 
