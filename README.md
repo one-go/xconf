@@ -46,7 +46,31 @@ metadata:
 备注等
 
 ## Quick Run
+
+1. etcd
+```
+docker run \
+--networks=host \
+-v /data/etcd-data:/etcd-data \
+--name etcd-gcr-v3.4.7 \
+gcr.io/etcd-development/etcd:v3.4.7 \
+/usr/local/bin/etcd \
+--name s1 \
+--data-dir /etcd-data \
+--listen-client-urls http://0.0.0.0:2379 \
+--advertise-client-urls http://0.0.0.0:2379 \
+--listen-peer-urls http://0.0.0.0:2380 \
+--initial-advertise-peer-urls http://0.0.0.0:2380 \
+--initial-cluster s1=http://0.0.0.0:2380 \
+--initial-cluster-token tkn \
+--initial-cluster-state new \
+--log-level info \
+--logger zap \
+--log-outputs stderr
+```
+
+2. xconf
 ```
 docker build -t onego/xconf:dev .
-docker-compose up
+docker run --networks=host --name xconf onego/xconf:dev -l :8900 -s :8901 -dir /web -h 127.0.0.1:2379
 ```
