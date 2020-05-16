@@ -4,10 +4,10 @@ ENV CGO_ENABLED=0
 
 COPY . /go/src/github.com/one-go/xconf
 
-RUN cd /go/src/github.com/one-go/xconf && make release-binary
+RUN cd /go/src/github.com/one-go/xconf && make
 
 FROM scratch
-COPY --from=builder bin/xconf /usr/bin/xconf
-COPY --from=builder web /web
+COPY --from=builder /go/src/github.com/one-go/xconf/bin/xconf /usr/bin/xconf
+COPY --from=builder /go/src/github.com/one-go/xconf/web /web
 
-ENTRYPOINT ["/usr/bin/xconf"]
+ENTRYPOINT ["xconf"]

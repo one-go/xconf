@@ -17,10 +17,6 @@ proto:
 docker-image:
 	docker build -t $(DOCKER_IMAGE) .
 
-.PHONY: release-binary
-release-binary:
-	go build -o bin/xconf -v $(LD_FLAGS) $(REPO_PATH)/console
-
 .PHONY: web
 web:
 	cd web && npx webpack index.js
