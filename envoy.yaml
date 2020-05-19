@@ -1,7 +1,7 @@
 admin:
   access_log_path: /tmp/admin_access.log
   address:
-    socket_address: { address: 0.0.0.0, port_value: 8001 }
+    socket_address: { address: 127.0.0.1, port_value: 8001 }
 
 static_resources:
   listeners:
@@ -17,8 +17,7 @@ static_resources:
           route_config:
             virtual_hosts:
             - name: backend
-              domains:
-              - "*ifish.dev"
+              domains: ["*ifish.dev"]
               routes:
               - match:
                   prefix: "/"
@@ -66,9 +65,9 @@ static_resources:
         common_tls_context:
           tls_certificates:
             - certificate_chain:
-                filename: "/etc/letsencrypt/live/ifish.dev-001/fullchain.pem"
+                filename: "/etc/letsencrypt/live/ifish.dev-0001/fullchain.pem"
               private_key:
-                filename: "/etc/letsencrypt/live/ifish.dev-001/privkey.pem"
+                filename: "/etc/letsencrypt/live/ifish.dev-0001/privkey.pem"
 
   clusters:
   - name: dex
@@ -76,17 +75,17 @@ static_resources:
     type: logical_dns
     http2_protocol_options: {}
     lb_policy: round_robin
-    hosts: [{ socket_address: { address: dex, port_value: 8900 }}]
+    hosts: [{ socket_address: { address: 127.0.0.1, port_value: 5556 }}]
 
   - name: xconf-console
     connect_timeout: 0.25s
     type: logical_dns
     http2_protocol_options: {}
     lb_policy: round_robin
-    hosts: [{ socket_address: { address: xconfserver, port_value: 8901 }}]
+    hosts: [{ socket_address: { address: 127.0.0.1, port_value: 8900 }}]
 
   - name: xconf-web
     connect_timeout: 0.25s
     type: logical_dns
     lb_policy: round_robin
-    hosts: [{ socket_address: { address: xconfserver, port_value: 8902 }}]
+    hosts: [{ socket_address: { address: 127.0.0.1, port_value: 8901 }}]
