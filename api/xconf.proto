@@ -44,8 +44,9 @@ message ListGroupsResponse {
 }
 
 message GetConfigRequest {
-  // namespace/group/id
-  string name = 1;
+  // namespace/group
+  string parent = 1;
+  string id = 2;
 }
 
 message CreateConfigRequest {
@@ -63,7 +64,8 @@ message UpdateConfigRequest {
 
 message DeleteConfigRequest {
   // namespace/group/id
-  string name = 1;
+  string parent = 1;
+  string id = 2;
 }
 
 message ListConfigsRequest {

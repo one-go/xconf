@@ -1162,7 +1162,8 @@ proto.api.GetConfigRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.api.GetConfigRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    parent: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1201,7 +1202,11 @@ proto.api.GetConfigRequest.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      msg.setParent(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
       break;
     default:
       reader.skipField();
@@ -1232,10 +1237,17 @@ proto.api.GetConfigRequest.prototype.serializeBinary = function() {
  */
 proto.api.GetConfigRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getName();
+  f = message.getParent();
   if (f.length > 0) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
       f
     );
   }
@@ -1243,10 +1255,10 @@ proto.api.GetConfigRequest.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string name = 1;
+ * optional string parent = 1;
  * @return {string}
  */
-proto.api.GetConfigRequest.prototype.getName = function() {
+proto.api.GetConfigRequest.prototype.getParent = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1255,8 +1267,26 @@ proto.api.GetConfigRequest.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.api.GetConfigRequest} returns this
  */
-proto.api.GetConfigRequest.prototype.setName = function(value) {
+proto.api.GetConfigRequest.prototype.setParent = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string id = 2;
+ * @return {string}
+ */
+proto.api.GetConfigRequest.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.api.GetConfigRequest} returns this
+ */
+proto.api.GetConfigRequest.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1705,7 +1735,8 @@ proto.api.DeleteConfigRequest.prototype.toObject = function(opt_includeInstance)
  */
 proto.api.DeleteConfigRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, "")
+    parent: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1744,7 +1775,11 @@ proto.api.DeleteConfigRequest.deserializeBinaryFromReader = function(msg, reader
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      msg.setParent(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
       break;
     default:
       reader.skipField();
@@ -1775,10 +1810,17 @@ proto.api.DeleteConfigRequest.prototype.serializeBinary = function() {
  */
 proto.api.DeleteConfigRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getName();
+  f = message.getParent();
   if (f.length > 0) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
       f
     );
   }
@@ -1786,10 +1828,10 @@ proto.api.DeleteConfigRequest.serializeBinaryToWriter = function(message, writer
 
 
 /**
- * optional string name = 1;
+ * optional string parent = 1;
  * @return {string}
  */
-proto.api.DeleteConfigRequest.prototype.getName = function() {
+proto.api.DeleteConfigRequest.prototype.getParent = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1798,8 +1840,26 @@ proto.api.DeleteConfigRequest.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.api.DeleteConfigRequest} returns this
  */
-proto.api.DeleteConfigRequest.prototype.setName = function(value) {
+proto.api.DeleteConfigRequest.prototype.setParent = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string id = 2;
+ * @return {string}
+ */
+proto.api.DeleteConfigRequest.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.api.DeleteConfigRequest} returns this
+ */
+proto.api.DeleteConfigRequest.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

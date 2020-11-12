@@ -123,50 +123,6 @@ func (c *Xconf) Get(ctx context.Context, key string) ([]byte, int64, error) {
 	return res.Kvs[0].Value, res.Kvs[0].Version, nil
 }
 
-func (c *Xconf) CreateFile(ctx context.Context, f *File) error {
-	name := c.Key(f.Group, f.Name)
-	if f.Meta.CreateTime == 0 {
-		f.Meta.CreateTime = time.Now().Unix()
-	}
-	meta, err := json.Marshal(&f.Meta)
-	if err != nil {
-		return err
-	}
-	if _, err := c.client.Put(ctx, name, string(f.Content)); err != nil {
-		return err
-	}
-	if _, err = c.client.Put(ctx, c.Meta(name), string(meta)); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Xconf) UpdateFile(ctx context.Context, f *File) error {
-	name := c.Key(f.Group, f.Name)
-	meta, err := json.Marshal(&f.Meta)
-	if err != nil {
-		return err
-	}
-	if _, err := c.client.Put(ctx, name, string(f.Content)); err != nil {
-		return err
-	}
-	if _, err = c.client.Put(ctx, c.Meta(name), string(meta)); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Xconf) DeleteFile(ctx context.Context, group, name string) error {
-	fname := c.Key(group, name)
-	if _, err := c.client.Delete(ctx, fname); err != nil {
-		return err
-	}
-	if _, err := c.client.Delete(ctx, c.Meta(fname)); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (c *Xconf) ReadCache(group, name string) ([]byte, error) {
 	fname := filepath.Join(c.cacheDir, group, name)
 	return ioutil.ReadFile(fname)
